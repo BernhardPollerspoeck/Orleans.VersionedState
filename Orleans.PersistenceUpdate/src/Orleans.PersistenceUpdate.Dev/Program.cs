@@ -28,10 +28,10 @@ await host.StartAsync();
 
 var grain = host
 	.Services
-	.GetRequiredService<IClusterClient>().GetGrain<ITestStateGrain>("1");
+	.GetRequiredService<IClusterClient>().GetGrain<ITestStateGrain>("133433");
 
-await grain.SetState("first", "last");
-
+//await grain.SetState("first", "last");
+var state = await grain.GetState();
 
 Console.WriteLine("Hello, World!");
 

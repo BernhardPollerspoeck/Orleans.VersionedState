@@ -9,18 +9,26 @@ using System.Threading.Tasks;
 namespace Orleans.PersistenceUpdate.DevServer;
 internal class TestStateGrain : Grain, ITestStateGrain
 {
-	private readonly IPersistentState<VersionedStateContainer<V1TestState>> _state;
+	private readonly IPersistentState<VersionedStateContainer> _state;
+	private VersionedStateManager<V1TestState> _stateManager;
 
 	public TestStateGrain(
 		[PersistentState("TestState", "STORE_NAME")]
-		IPersistentState<VersionedStateContainer<V1TestState>> state)
+		IPersistentState<VersionedStateContainer> state)
 	{
 		_state = state;
+		_stateManager = default!;//TODO: meh...
+	}
+
+	public override Task OnActivateAsync(CancellationToken cancellationToken)
+	{
+		_stateManager = new(_state.State.States);
+		return base.OnActivateAsync(cancellationToken);
 	}
 
 	public Task SetState(string first, string last)
 	{
-		var current = _state.State.Current;
+		var current = _stateManager.Current;
 		current.FirstName = first;
 		current.LastName = last;
 		return _state.WriteStateAsync();
@@ -28,7 +36,7 @@ internal class TestStateGrain : Grain, ITestStateGrain
 
 	public Task<string> GetState()
 	{
-		return Task.FromResult($"{_state.State.Current.FirstName}:::{_state.State.Current.LastName}");
+		return Task.FromResult($"{_stateManager.Current.FirstName}:::{_stateManager.Current.LastName}");
 	}
 
 }

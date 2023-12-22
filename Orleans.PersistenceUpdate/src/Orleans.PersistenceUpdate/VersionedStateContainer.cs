@@ -4,28 +4,35 @@ using Newtonsoft.Json;
 
 namespace Orleans.PersistenceUpdate;
 
-[GenerateSerializer]
-public class VersionedStateContainer<TCurrentState>
+public class VersionedStateContainer
+{
+	public Dictionary<int, VersionedState> States { get; set; }
+
+	public VersionedStateContainer()
+	{
+		States = [];
+	}
+}
+
+public class VersionedStateManager<TCurrentState>
 	where TCurrentState : VersionedState, new()
 {
-	private readonly Dictionary<int, VersionedState> _states;
+
 	private TCurrentState? _convertedState;
+
 
 	[JsonIgnore]
 	public TCurrentState Current => _convertedState ?? ConvertStateToCurrentVersion();
 
-	[Id(0)]
-	public IReadOnlyDictionary<int, VersionedState> States => _states;
 
-	public VersionedStateContainer(
-		VersionedState[]? states)
+	private readonly Dictionary<int, VersionedState> _states;
+
+	public VersionedStateManager(Dictionary<int, VersionedState> states)
 	{
-		_states = states?.ToDictionary(s => s.Version, s => s) ?? [];
+		_states = states;
 	}
-	public VersionedStateContainer()
-	{
-		_states = [];
-	}
+
+
 
 	private TCurrentState ConvertStateToCurrentVersion()
 	{
@@ -41,5 +48,6 @@ public class VersionedStateContainer<TCurrentState>
 
 		return _convertedState;
 	}
+
 
 }
