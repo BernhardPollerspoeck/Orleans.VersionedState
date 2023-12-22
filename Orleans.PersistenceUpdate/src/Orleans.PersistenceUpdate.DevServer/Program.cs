@@ -17,7 +17,6 @@ builder.UseOrleans((hostContext, siloBuilder) =>
 			o.ConnectionString = "server=localhost;database=orleansIterator;user=root;password=unsecure1Admin";
 		})
 		;
-
 	siloBuilder
 		.Configure<ClusterOptions>(o =>
 		{

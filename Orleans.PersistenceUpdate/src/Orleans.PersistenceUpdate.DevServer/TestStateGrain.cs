@@ -1,81 +1,63 @@
-﻿using Orleans.PersistenceUpdate.DevGrain;
+﻿using Orleans.Core;
+using Orleans.PersistenceUpdate.DevGrain;
 using Orleans.Runtime;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Orleans.PersistenceUpdate.DevServer;
-internal class TestStateGrain : Grain, ITestStateGrain
+public class TestStateGrain : Grain, ITestStateGrain
 {
-	private readonly IPersistentState<VersionedStateContainer> _state;
-	private VersionedStateManager<V1TestState> _stateManager;
+	#region fields
+	private readonly TestStateManager _stateManager;
+	#endregion
 
+	#region ctor
 	public TestStateGrain(
 		[PersistentState("TestState", "STORE_NAME")]
 		IPersistentState<VersionedStateContainer> state)
 	{
-		_state = state;
-		_stateManager = default!;//TODO: meh...
+		_stateManager = new(state);
 	}
+	#endregion
 
-	public override Task OnActivateAsync(CancellationToken cancellationToken)
-	{
-		_stateManager = new(_state.State.States);
-		return base.OnActivateAsync(cancellationToken);
-	}
-
+	#region ITestStateGrain
 	public Task SetState(string first, string last)
 	{
-		var current = _stateManager.Current;
-		current.FirstName = first;
-		current.LastName = last;
-		return _state.WriteStateAsync();
+		//var current = _stateManager.Current;
+		//current.FirstName = first;
+		//current.LastName = last;
+		return _stateManager.WriteStateAsync();
 	}
 
-	public Task<string> GetState()
+	public async Task<string> GetState()
 	{
-		return Task.FromResult($"{_stateManager.Current.FirstName}:::{_stateManager.Current.LastName}");
+		var name = _stateManager.Current.FullName!;
+		await _stateManager.WriteStateAsync();
+		return name;
 	}
-
-}
-
-
-[GenerateSerializer]
-class V1TestState : VersionedState
-{
-	#region properties
-	[Id(0)]
-	public string? FirstName { get; set; }
-	[Id(1)]
-	public string? LastName { get; set; }
-	#endregion
-
-	#region VersionedState
-	public override int Version => 1;
 	#endregion
 }
 
-[GenerateSerializer]
-class V2TestState : VersionedState
+
+public class TestStateManager : VersionedStateManager<V2TestState>
 {
-	#region properties
-	[Id(0)]
-	public string? FullName { get; set; }
-	#endregion
-
-	#region VersionedState
-	public override int Version => 2;
-
-	public override bool ConvertState(VersionedState? source)
+	#region ctor
+	public TestStateManager(IStorage<VersionedStateContainer> stateContainer)
+		: base(stateContainer)
 	{
-		if (source is not V1TestState v1)
-		{
-			return false;
-		}
-		FullName = $"{v1.FirstName} {v1.LastName}";
-		return true;
 	}
 	#endregion
+
+	#region VersionedStateManager<V1TestState>
+	protected override VersionTransform[] Transforms => [
+		new VersionTransform(
+			1,
+			2,
+			s => s is V1TestState v1
+				? new V2TestState
+				{
+					FullName = $"{v1.FirstName} {v1.LastName}"
+				}
+				: throw new Exception("NO!!"))
+	];
+	#endregion
 }
+
