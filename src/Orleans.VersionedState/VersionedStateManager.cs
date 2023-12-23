@@ -26,10 +26,15 @@ public abstract class VersionedStateManager<TCurrentState>
 		storeHasChanged = false;
 		return _convertedState ?? ConvertStateToCurrentVersion(ref storeHasChanged);
 	}
+	public TCurrentState GetState()
+	{
+		var storeHasChanged = false;
+		return _convertedState ?? ConvertStateToCurrentVersion(ref storeHasChanged);
+	}
 
 	#region IStorageMember
 	public string ETag => _stateContainer.Etag;
-	public bool RecordExistr => _stateContainer.RecordExists;
+	public bool RecordExists => _stateContainer.RecordExists;
 	public Task ClearStateAsync() => _stateContainer.ClearStateAsync();
 	public Task WriteStateAsync() => _stateContainer.WriteStateAsync();
 	public Task ReadStateAsync() => _stateContainer.ReadStateAsync();

@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>8.0.0-rc1</Version>
+    <Version>8.0.0.2-rc1</Version>
     <Title>Orleans.VersionedState</Title>
     <Authors>Bernhard Pollerspöck</Authors>
     <Company>qsp</Company>
