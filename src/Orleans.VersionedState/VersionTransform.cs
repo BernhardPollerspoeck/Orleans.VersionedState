@@ -1,7 +1,6 @@
 ﻿namespace Orleans.PersistenceUpdate;
 
 /// <summary>
-/// TODO: doc
 /// The Tranform is expected to always return the new versioned object. 
 /// Source and Target Version get checked before Tranform is called.
 /// </summary>

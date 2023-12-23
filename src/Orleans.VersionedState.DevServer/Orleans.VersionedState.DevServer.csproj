@@ -17,7 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Orleans.PersistenceUpdate.DevGrain\Orleans.PersistenceUpdate.DevGrain.csproj" />
-    <ProjectReference Include="..\Orleans.PersistenceUpdate\Orleans.PersistenceUpdate.csproj" />
+    <ProjectReference Include="..\Orleans.PersistenceUpdate\Orleans.VersionedState.csproj" />
   </ItemGroup>
 
 </Project>

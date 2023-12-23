@@ -5,11 +5,11 @@ VisualStudioVersion = 17.8.34322.80
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orleans.PersistenceUpdate.Dev", "src\Orleans.PersistenceUpdate.Dev\Orleans.PersistenceUpdate.Dev.csproj", "{24B54836-DAA8-4149-B80C-CABB454BF917}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orleans.PersistenceUpdate.DevServer", "src\Orleans.PersistenceUpdate.DevServer\Orleans.PersistenceUpdate.DevServer.csproj", "{EE5AF41F-9D7F-4335-92F0-317EAFC12972}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orleans.PersistenceUpdate.DevServer", "src\Orleans.PersistenceUpdate.DevServer\Orleans.PersistenceUpdate.DevServer.csproj", "{EE5AF41F-9D7F-4335-92F0-317EAFC12972}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orleans.PersistenceUpdate", "src\Orleans.PersistenceUpdate\Orleans.PersistenceUpdate.csproj", "{3F73EAE4-27B1-40EA-8492-9BDA1752214B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orleans.VersionedState", "src\Orleans.PersistenceUpdate\Orleans.VersionedState.csproj", "{3F73EAE4-27B1-40EA-8492-9BDA1752214B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orleans.PersistenceUpdate.DevGrain", "src\Orleans.PersistenceUpdate.DevGrain\Orleans.PersistenceUpdate.DevGrain.csproj", "{B342232F-B0FC-47B8-B62B-1EE0DB7E9EE8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orleans.PersistenceUpdate.DevGrain", "src\Orleans.PersistenceUpdate.DevGrain\Orleans.PersistenceUpdate.DevGrain.csproj", "{B342232F-B0FC-47B8-B62B-1EE0DB7E9EE8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,5 +1,4 @@
 ﻿using Orleans.Core;
-using OrleansCodeGen.Orleans.Serialization.Codecs;
 
 namespace Orleans.PersistenceUpdate;
 
@@ -13,7 +12,6 @@ public abstract class VersionedStateManager<TCurrentState>
 
 	#region properties
 	protected abstract VersionTransform[] Transforms { get; }
-	public TCurrentState Current => _convertedState ?? ConvertStateToCurrentVersion();
 	#endregion
 
 	#region ctor
@@ -23,6 +21,12 @@ public abstract class VersionedStateManager<TCurrentState>
 	}
 	#endregion
 
+	public TCurrentState GetState(ref bool storeHasChanged)
+	{
+		storeHasChanged = false;
+		return _convertedState ?? ConvertStateToCurrentVersion(ref storeHasChanged);
+	}
+
 	#region IStorageMember
 	public string ETag => _stateContainer.Etag;
 	public bool RecordExistr => _stateContainer.RecordExists;
@@ -31,18 +35,14 @@ public abstract class VersionedStateManager<TCurrentState>
 	public Task ReadStateAsync() => _stateContainer.ReadStateAsync();
 	#endregion
 
-
-
-
-	//TODO: inform user if state object is newly created
-	private TCurrentState ConvertStateToCurrentVersion()
+	private TCurrentState ConvertStateToCurrentVersion(ref bool storeHasChanged)
 	{
 		//in case there is nothing in state, we do not tranform=> we create and return
-		if (!_stateContainer.State.States.Any())
+		if (_stateContainer.State.States.Count == 0)
 		{
 			_convertedState = new TCurrentState();
 			_stateContainer.State.States.Add(_convertedState.Version, _convertedState);
-			//TODO: mark dirty
+			storeHasChanged = true;
 			return _convertedState;
 		}
 
@@ -68,14 +68,14 @@ public abstract class VersionedStateManager<TCurrentState>
 		var path = FindShortestPath(nodes, [.. _stateContainer.State.States.Keys], newState.Version)
 			.Select(p => p.Value)
 			.ToArray();
-		if (path.Length is 0)
+		if (path.Length == 0)
 		{
 			_convertedState = new TCurrentState();
 			_stateContainer.State.States.Add(_convertedState.Version, _convertedState);
-			//TODO: mark dirty
+			storeHasChanged = true;
 			return _convertedState;
 		}
-		else if (path.Length is 1)
+		else if (path.Length == 1)
 		{
 			_convertedState = (TCurrentState)_stateContainer.State.States[path.First()];
 			return _convertedState;
@@ -95,10 +95,15 @@ public abstract class VersionedStateManager<TCurrentState>
 
 				var transform = Transforms
 					.First(t => t.SourceVersion == previousValue!.Value && t.TargetVersion == segment);
+				if (!result.KeepIfOutdated)
+				{
+					_stateContainer.State.States.Remove(result.Version);
+				}
 				result = transform.Transform(result);
 			}
 			_convertedState = (TCurrentState)result!;
 			_stateContainer.State.States.Add(_convertedState.Version, _convertedState);
+			storeHasChanged = true;
 			return _convertedState;
 		}
 	}
@@ -173,21 +178,4 @@ public abstract class VersionedStateManager<TCurrentState>
 
 		return path;
 	}
-}
-
-
-internal class Node
-{
-	#region properties
-	public int Value { get; }
-	public int[] Targets { get; }
-	#endregion
-
-	#region ctor
-	public Node(int value, IEnumerable<int> targets)
-	{
-		Value = value;
-		Targets = targets.ToArray();
-	}
-	#endregion
 }

@@ -29,8 +29,12 @@ public class TestStateGrain : Grain, ITestStateGrain
 
 	public async Task<string> GetState()
 	{
-		var name = _stateManager.Current.FullName!;
-		await _stateManager.WriteStateAsync();
+		var hasChanged = false;
+		var name = _stateManager.GetState(ref hasChanged).FullName!;
+		if (hasChanged)
+		{
+			await _stateManager.WriteStateAsync();
+		}
 		return name;
 	}
 	#endregion
