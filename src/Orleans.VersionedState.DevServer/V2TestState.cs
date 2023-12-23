@@ -8,5 +8,6 @@ public class V2TestState : VersionedState
 
 	#region VersionedState
 	public override int Version => 2;
+	public override bool KeepIfOutdated => true;
 	#endregion
 }
