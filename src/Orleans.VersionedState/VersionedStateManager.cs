@@ -2,7 +2,7 @@
 
 namespace Orleans.PersistenceUpdate;
 
-public abstract class VersionedStateManager<TCurrentState>
+public abstract class VersionedStateManager<TCurrentState> : IStorage
 	where TCurrentState : VersionedState, new()
 {
 	#region fields
@@ -33,7 +33,7 @@ public abstract class VersionedStateManager<TCurrentState>
 	}
 
 	#region IStorageMember
-	public string ETag => _stateContainer.Etag;
+	public string Etag => _stateContainer.Etag;
 	public bool RecordExists => _stateContainer.RecordExists;
 	public Task ClearStateAsync() => _stateContainer.ClearStateAsync();
 	public Task WriteStateAsync() => _stateContainer.WriteStateAsync();
