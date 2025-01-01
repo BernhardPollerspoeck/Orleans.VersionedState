@@ -5,7 +5,7 @@ This project allows to Transform GrainState between versions as needed. Migratin
 ## Packages
 | Package | Version |
 |---------|---------|
-| Orleans.VersionedState | ![Nuget](https://img.shields.io/nuget/v/Orleans.Iterator.Abstraction?logo=NuGet&color=00aa00) |
+| Orleans.VersionedState | ![Nuget](https://img.shields.io/nuget/v/Orleans.VersionedState?logo=NuGet&color=00aa00) |
 
 
 
